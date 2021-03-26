@@ -1,19 +1,19 @@
 /*
- / _____)             _              | |
-( (____  _____ ____ _| |_ _____  ____| |__
- \____ \| ___ |    (_   _) ___ |/ ___)  _ \
- _____) ) ____| | | || |_| ____( (___| | | |
-(______/|_____)_|_|_| \__)_____)\____)_| |_|
-  (C)2013 Semtech-Cycleo
+  Programa para pruebas con el gateway lora "IOT Lora Gateway Hat", basado en el RAK2247
+  Empresa: Diacsa
+  Autor: Ismael Takayama
 
-Description:
-    Configure LoRa concentrator and record received packets in a log file
+    Se uso la libreria Lora_gateway de Semtech
+    Datasheets:
+    Sx1301: https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/44000000MDnR/Et1KWLCuNDI6MDagfSPAvqqp.Y869Flgs1LleWyfjDY
 
-License: Revised BSD License, see LICENSE.TXT file include in the project
-Maintainer: Sylvain Miermont
+  El programa recepciona los datos de los canales establecidos en el archivo global_config.jason y devuelve un mensaje
+  de confirmación en el mismo canal y con el mismo SP y CR.
+
+  Los mensajes pueden ser enviados con cualquier SP y CR, pero debe estar dentro de los canales establecidos. Además, deberá
+  tener el sync word de 0x34 y el crc activado.
+
 */
-
-
 /* -------------------------------------------------------------------------- */
 /* --- DEPENDANCIES --------------------------------------------------------- */
 
