@@ -586,9 +586,9 @@ int main(int argc, char **argv)
             for (j = 0; j < p->size; ++j) {
                 if ((j > 0) && (j%4 == 0)) fputs("-", log_file);
                 fprintf(log_file, "%02X", p->payload[j]);
-                MSG("%c", p->payload[j]);
+                fprintf(stderr,"%c", p->payload[j]);
             }
-            MSG("\n");
+            fprintf(stderr,"\n");
 
             /* end of log file line */
             fputs("\"\n", log_file);
