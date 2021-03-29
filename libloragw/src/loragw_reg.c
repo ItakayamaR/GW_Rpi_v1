@@ -504,6 +504,7 @@ int reg_r_align32(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target
 int lgw_connect(bool spi_only, uint32_t tx_notch_freq) {
     int spi_stat = LGW_SPI_SUCCESS;
     uint8_t u = 0;
+    uint8_t version=35;
     int x;
 
     /* check SPI link status */
@@ -529,7 +530,7 @@ int lgw_connect(bool spi_only, uint32_t tx_notch_freq) {
         }
         if (check_fpga_version(u) != true) {
             /* We failed to read expected FPGA version, so let's assume there is no FPGA */
-            DEBUG_PRINTF("INFO: no FPGA detected or version not supported (v%u)\n", u);
+            DEBUG_PRINTF("INFO: no FPGA detected or version not supported (v%u)\n", &version);
             lgw_spi_mux_mode = LGW_SPI_MUX_MODE0;
         } else {
             DEBUG_PRINTF("INFO: detected FPGA with SPI mux header (v%u)\n", u);

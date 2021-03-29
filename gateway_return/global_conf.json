@@ -80,8 +80,7 @@
 		"chan_FSK": {
 			"desc": "disabled",
 			"enable": false
-		},
-	
+		}	
     },
     "gateway_conf": {
         "gateway_ID": "AA555A0000000000"
