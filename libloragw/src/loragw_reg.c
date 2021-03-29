@@ -503,8 +503,7 @@ int reg_r_align32(void *spi_target, uint8_t spi_mux_mode, uint8_t spi_mux_target
 /* Concentrator connect */
 int lgw_connect(bool spi_only, uint32_t tx_notch_freq) {
     int spi_stat = LGW_SPI_SUCCESS;
-    uint8_t u = 0;
-    uint8_t version=35;
+    uint8_t u = 0; 
     int x;
 
     /* check SPI link status */
