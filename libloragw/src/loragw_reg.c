@@ -551,7 +551,7 @@ int lgw_connect(bool spi_only, uint32_t tx_notch_freq) {
             DEBUG_MSG("ERROR READING CHIP VERSION REGISTER\n");
             return LGW_REG_ERROR;
         }
-        if (u != loregs[LGW_VERSION].dflt || u != 35) {
+        if (u != loregs[LGW_VERSION].dflt && u != 35) {
             DEBUG_PRINTF("ERROR: NOT EXPECTED CHIP VERSION (v%u)\n", u);
             return LGW_REG_ERROR;
         }
