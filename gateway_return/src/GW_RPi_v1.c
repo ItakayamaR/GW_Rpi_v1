@@ -581,11 +581,14 @@ int main(int argc, char **argv)
             fprintf(log_file, "%+5.1f,", p->snr);
 
             /* writing hex-encoded payload (bundled in 32-bit words) */
+            MSG("Mesage recorded: ");
             fputs("\"", log_file);
             for (j = 0; j < p->size; ++j) {
                 if ((j > 0) && (j%4 == 0)) fputs("-", log_file);
                 fprintf(log_file, "%02X", p->payload[j]);
+                MSG("$c", p->payload[j]);
             }
+            MSG("\n");
 
             /* end of log file line */
             fputs("\"\n", log_file);
