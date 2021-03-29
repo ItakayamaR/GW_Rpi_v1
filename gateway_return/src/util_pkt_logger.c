@@ -8,9 +8,9 @@
     Sx1301: https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/44000000MDnR/Et1KWLCuNDI6MDagfSPAvqqp.Y869Flgs1LleWyfjDY
 
   El programa recepciona los datos de los canales establecidos en el archivo global_config.jason y devuelve un mensaje
-  de confirmación en el mismo canal y con el mismo SP y CR.
+  de confirmaciï¿½n en el mismo canal y con el mismo SP y CR.
 
-  Los mensajes pueden ser enviados con cualquier SP y CR, pero debe estar dentro de los canales establecidos. Además, deberá
+  Los mensajes pueden ser enviados con cualquier SP y CR, pero debe estar dentro de los canales establecidos. Ademï¿½s, deberï¿½
   tener el sync word de 0x34 y el crc activado.
 
 */
@@ -567,9 +567,9 @@ int main(int argc, char **argv)
             /* writing coderate */
             switch (p->coderate) {
                 case CR_LORA_4_5:   fputs("\"4/5\",", log_file); break;
-                case CR_LORA_4_6:   fputs("\"2/3\",", log_file); break;
+                case CR_LORA_4_6:   fputs("\"4/6\",", log_file); break;
                 case CR_LORA_4_7:   fputs("\"4/7\",", log_file); break;
-                case CR_LORA_4_8:   fputs("\"1/2\",", log_file); break;
+                case CR_LORA_4_8:   fputs("\"4/8\",", log_file); break;
                 case CR_UNDEFINED:  fputs("\"\"   ,", log_file); break;
                 default:            fputs("\"ERR\",", log_file);
             }

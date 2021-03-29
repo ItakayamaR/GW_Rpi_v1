@@ -10,6 +10,7 @@ LoRa Gateway project
 Adaptado por Ismael Takayama
 Empresa: Diacsa
 
+Para pruebas de recepción de paquetes y envío de confirmación, usar el programa gateway_return
 
 =====================
 
