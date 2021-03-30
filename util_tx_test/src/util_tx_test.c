@@ -128,7 +128,6 @@ void usage(void) {
     printf("Available options:\n");
     printf(" -h                 print this help\n");
     printf(" -r         <int>   radio type (SX1255:1255, SX1257:1257)\n");
-    printf(" -n         <uint>  TX notch filter frequency in kHz [126..250]\n");
     printf(" -f         <float> target frequency in MHz\n");
     printf(" -k         <uint>  concentrator clock source (0:Radio A, 1:Radio B)\n");
     printf(" -m         <str>   modulation type ['LORA', 'FSK']\n");
@@ -147,11 +146,6 @@ void usage(void) {
     printf(" -i                 send packet using inverted modulation polarity\n");
     printf(" -t         <uint>  pause between packets (ms)\n");
     printf(" -x         <int>   nb of times the sequence is repeated (-1 loop until stopped)\n");
-    printf(" --lbt-freq         <float> lbt first channel frequency in MHz\n");
-    printf(" --lbt-nbch         <uint>  lbt number of channels [1..8]\n");
-    printf(" --lbt-sctm         <uint>  lbt scan time in usec to be applied to all channels [128, 5000]\n");
-    printf(" --lbt-rssi         <int>   lbt rssi target in dBm [-128..0]\n");
-    printf(" --lbt-rssi-offset  <int>   rssi offset in dB to be applied to SX127x RSSI [-128..127]\n");
 }
 
 /* -------------------------------------------------------------------------- */
@@ -224,17 +218,6 @@ int main(int argc, char **argv)
                     return EXIT_FAILURE;
                 } else {
                     f_target = (uint32_t)((xd*1e6) + 0.5); /* .5 Hz offset to get rounding instead of truncating */
-                }
-                break;
-
-            case 'n': /* <uint> TX notch filter frequency in kHz */
-                i = sscanf(optarg, "%i", &xi);
-                if ((i != 1) || ((xi < 126) || (xi > 250))) {
-                    MSG("ERROR: invalid TX notch filter frequency\n");
-                    usage();
-                    return EXIT_FAILURE;
-                } else {
-                    tx_notch_freq = xi*1000;
                 }
                 break;
 
@@ -438,7 +421,6 @@ int main(int argc, char **argv)
     for (i = 0; i < LGW_RF_CHAIN_NB; i++) {
         if (i == TX_RF_CHAIN) {
             rfconf.tx_enable = true;
-            rfconf.tx_notch_freq = tx_notch_freq;
         } else {
             rfconf.tx_enable = false;
         }
