@@ -438,7 +438,7 @@ int main(int argc, char **argv)
     int pow = 27; /* 14 dBm by default */
     int preamb = 8; /* 8 symbol preamble by default */
     int pl_size = 2; /* 2 bytes payload by default */
-    uint32_t wait_time = 1E6; /* 1 second between packets by default */
+    uint32_t wait_time = 5E5; /*0.5 seconds between packets by default */
     bool invert = false;
 
 
@@ -725,7 +725,7 @@ int main(int argc, char **argv)
                 do {
                     wait_ms(5);
                     lgw_status(TX_STATUS, &status_var); /* get TX status */
-                    printf("enviando\n");
+                    //printf("enviando\n");
                 } while (status_var != TX_FREE);
             printf("OK\n");
         }
