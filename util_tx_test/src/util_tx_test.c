@@ -182,7 +182,6 @@ int main(int argc, char **argv)
     enum lgw_radio_type_e radio_type = LGW_RADIO_TYPE_NONE;
     uint8_t clocksource = 1; /* Radio B is source by default */
     struct lgw_conf_board_s boardconf;
-    struct lgw_conf_lbt_s lbtconf;
     struct lgw_conf_rxrf_s rfconf;
 
     /* allocate memory for packet sending */
