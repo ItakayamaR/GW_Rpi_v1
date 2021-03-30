@@ -26,7 +26,6 @@ Maintainer: Sylvain Miermont
 
 #include "loragw_spi.h"
 #include "loragw_reg.h"
-#include "loragw_fpga.h"
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
