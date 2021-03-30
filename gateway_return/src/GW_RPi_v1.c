@@ -51,6 +51,46 @@ struct sigaction sigact; /* SIGQUIT&SIGINT&SIGTERM signal handling */
 static int exit_sig = 0; /* 1 -> application terminates cleanly (shut down hardware, close open files, etc) */
 static int quit_sig = 0; /* 1 -> application terminates without shutting down the hardware */
 
+/* TX gain LUT table */
+static struct lgw_tx_gain_lut_s txgain_lut = {
+    .size = 5,
+    .lut[0] = {
+        .dig_gain = 0,
+        .pa_gain = 0,
+        .dac_gain = 3,
+        .mix_gain = 12,
+        .rf_power = 0
+    },
+    .lut[1] = {
+        .dig_gain = 0,
+        .pa_gain = 1,
+        .dac_gain = 3,
+        .mix_gain = 12,
+        .rf_power = 10
+    },
+    .lut[2] = {
+        .dig_gain = 0,
+        .pa_gain = 2,
+        .dac_gain = 3,
+        .mix_gain = 10,
+        .rf_power = 14
+    },
+    .lut[3] = {
+        .dig_gain = 0,
+        .pa_gain = 3,
+        .dac_gain = 3,
+        .mix_gain = 9,
+        .rf_power = 20
+    },
+    .lut[4] = {
+        .dig_gain = 0,
+        .pa_gain = 3,
+        .dac_gain = 3,
+        .mix_gain = 14,
+        .rf_power = 27
+    }};
+
+
 /* configuration variables needed by the application  */
 uint64_t lgwm = 0; /* LoRa gateway MAC address */
 char lgwm_str[17];
@@ -370,6 +410,11 @@ void usage(void) {
     printf( "Available options:\n");
     printf( " -h print this help\n");
     printf( " -r <int> rotate log file every N seconds (-1 disable log rotation)\n");
+    printf( " -p <int> Tx power (dBm) [ ");
+    for (i = 0; i < txgain_lut.size; i++) {
+        printf("%ddBm ", txgain_lut.lut[i].rf_power);
+    }
+    printf("]\n");
 }
 
 /* -------------------------------------------------------------------------- */
@@ -377,6 +422,24 @@ void usage(void) {
 
 int main(int argc, char **argv)
 {
+    uint8_t status_var;
+    
+    /* user entry parameters */
+    int xi = 0;
+
+    /* application parameters */
+    char mod[64] = DEFAULT_MODULATION;
+    uint32_t f_target = 0; /* target frequency - invalid default value, has to be specified by user */
+    int sf = 10; /* SF10 by default */
+    int cr = 1; /* CR1 aka 4/5 by default */
+    int bw = 125; /* 125kHz bandwidth by default */
+    int pow = 14; /* 14 dBm by default */
+    int preamb = 8; /* 8 symbol preamble by default */
+    int pl_size = 2; /* 2 bytes payload by default */
+    uint32_t delay = 1E6; /* 1 second between packets by default */
+    bool invert = false;
+
+
     int i, j; /* loop and temporary variables */
     struct timespec sleep_time = {0, 3000000}; /* 3 ms */
 
@@ -394,6 +457,9 @@ int main(int argc, char **argv)
     struct lgw_pkt_rx_s rxpkt[16]; /* array containing up to 16 inbound packets metadata */
     struct lgw_pkt_rx_s *p; /* pointer on a RX packet */
     int nb_pkt;
+
+    /* allocate memory for packet sending */
+    struct lgw_pkt_tx_s txpkt; /* array containing 1 outbound packet + metadata */
 
     /* local timestamp variables until we get accurate GPS time */
     struct timespec fetch_time;
@@ -413,6 +479,17 @@ int main(int argc, char **argv)
                 if ((log_rotate_interval == 0) || (log_rotate_interval < -1)) {
                     MSG( "ERROR: Invalid argument for -r option\n");
                     return EXIT_FAILURE;
+                }
+                break;
+            
+            case 'p': /* <int> RF power */
+                i = sscanf(optarg, "%i", &xi);
+                if ((i != 1) || (xi < -60) || (xi > 60)) {
+                    MSG("ERROR: invalid RF power\n");
+                    usage();
+                    return EXIT_FAILURE;
+                } else {
+                    pow = xi;
                 }
                 break;
 
@@ -457,6 +534,9 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    /* TX gain config */
+    lgw_txgain_setconf(&txgain_lut);
+
     /* starting the concentrator */
     i = lgw_start();
     if (i == LGW_HAL_SUCCESS) {
@@ -475,6 +555,7 @@ int main(int argc, char **argv)
 
     /* main loop */
     while ((quit_sig != 1) && (exit_sig != 1)) {
+
         /* fetch packets */
         nb_pkt = lgw_receive(ARRAY_SIZE(rxpkt), rxpkt);
         if (nb_pkt == LGW_HAL_ERROR) {
@@ -493,6 +574,41 @@ int main(int argc, char **argv)
         for (i=0; i < nb_pkt; ++i) {
             p = &rxpkt[i];
 
+            /* limpiamos la estructura de transmisión */
+            memset(&txpkt, 0, sizeof(txpkt));
+
+            /* Escribimos la frecuencia de transmisión (igual a la del mensaje recibido)*/
+            txpkt.freq_hz = p->freq_hz;
+
+            /* Modo de transmisión a un tiempo definido*/
+            txpkt.tx_mode = TIMESTAMPED;  
+
+            /* Modo de transmisión a un tiempo definido*/
+            txpkt.rf_chain = TX_RF_CHAIN;
+
+            /* Potencia de transmisión (por defecto 14 dbm)*/
+            txpkt.rf_power = pow;    
+            txpkt.modulation = MOD_LORA;
+
+            /* Escribimos el BW (igual a la del mensaje recibido)*/
+            txpkt.bandwidth = p->modulation;
+
+            /* Escribimos el SP (igual a la del mensaje recibido)*/
+            txpkt.datarate = p->datarate;
+
+            /* Escribimos el CR (igual a la del mensaje recibido)*/
+            txpkt.coderate = p->coderate;
+
+            txpkt.invert_pol = invert;
+            txpkt.preamble = preamb;
+            txpkt.size = pl_size;
+
+            /* Escribimos el Mensaje de confirmación*/
+            strcpy((char *)txpkt.payload, "OK")
+
+            txpkt.count_us = p->count_us + delay;
+
+            //Empezamos a escribir en el registro los datos
             /* writing gateway ID */
             fprintf(log_file, "\"%08X%08X\",", (uint32_t)(lgwm >> 32), (uint32_t)(lgwm & 0xFFFFFFFF));
 
@@ -514,6 +630,8 @@ int main(int argc, char **argv)
 
             /* writing RX modem/IF chain */
             fprintf(log_file, "%2d,", p->if_chain);
+
+            txpkt.count_us = sx1301_count_us + 50E3;
 
             /* writing status */
             switch(p->status) {
@@ -581,7 +699,7 @@ int main(int argc, char **argv)
             fprintf(log_file, "%+5.1f,", p->snr);
 
             /* writing hex-encoded payload (bundled in 32-bit words) */
-            MSG("Mesage recorded: ");
+            MSG("Message recorded: ");
             fputs("\"", log_file);
             for (j = 0; j < p->size; ++j) {
                 if ((j > 0) && (j%4 == 0)) fputs("-", log_file);
@@ -594,6 +712,21 @@ int main(int argc, char **argv)
             fputs("\"\n", log_file);
             fflush(log_file);
             ++pkt_in_log;
+
+            /* Enviamos el mensaje de confirmacion */
+            MSG("Sending OK");
+
+            if (i == LGW_HAL_ERROR) {
+                printf("ERROR\n");
+                return EXIT_FAILURE;
+            } else {
+                /* wait for packet to finish sending */
+                do {
+                    wait_ms(5);
+                    lgw_status(TX_STATUS, &status_var); /* get TX status */
+                } while (status_var != TX_FREE);
+            printf("OK\n");
+        }
         }
 
         /* check time and rotate log file if necessary */
