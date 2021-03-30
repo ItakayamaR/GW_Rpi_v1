@@ -435,7 +435,7 @@ int main(int argc, char **argv)
     int xi = 0;
 
     /* application parameters */
-    int pow = 14; /* 14 dBm by default */
+    int pow = 27; /* 14 dBm by default */
     int preamb = 8; /* 8 symbol preamble by default */
     int pl_size = 2; /* 2 bytes payload by default */
     uint32_t wait_time = 1E6; /* 1 second between packets by default */
@@ -584,6 +584,7 @@ int main(int argc, char **argv)
 
             /* Modo de transmisión a un tiempo definido*/
             txpkt.tx_mode = TIMESTAMPED;  
+            //txpkt.tx_mode=IMMEDIATE;
 
             /* Modo de transmisión a un tiempo definido*/
             txpkt.rf_chain = TX_RF_CHAIN;
@@ -714,8 +715,8 @@ int main(int argc, char **argv)
             ++pkt_in_log;
 
             /* Enviamos el mensaje de confirmacion */
-            MSG("Sending OK");
-
+            MSG("Sending OK\n");
+            i = lgw_send(txpkt); /* non-blocking scheduling of TX packet */
             if (i == LGW_HAL_ERROR) {
                 printf("ERROR\n");
                 return EXIT_FAILURE;
