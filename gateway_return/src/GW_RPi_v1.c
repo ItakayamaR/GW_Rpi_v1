@@ -594,7 +594,7 @@ int main(int argc, char **argv)
             txpkt.modulation = MOD_LORA;
 
             /* Escribimos el BW (igual a la del mensaje recibido)*/
-            txpkt.bandwidth = p->modulation;
+            txpkt.bandwidth = p->bandwidth;
 
             /* Escribimos el SP (igual a la del mensaje recibido)*/
             txpkt.datarate = p->datarate;
