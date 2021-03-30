@@ -1036,10 +1036,6 @@ int lgw_start(void) {
     lgw_reg_w(LGW_GPS_EN, 1);
 
     /* */
-    if (lbt_is_enabled() == true) {
-        printf("INFO: Configuring LBT, this may take few seconds, please wait...\n");
-        wait_ms(8400);
-    }
 
     lgw_is_started = true;
     return LGW_HAL_SUCCESS;
@@ -1288,7 +1284,7 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 int lgw_send(struct lgw_pkt_tx_s pkt_data) {
-    int i, x;
+    int i;
     uint8_t buff[256+TX_METADATA_NB]; /* buffer to prepare the packet to send + metadata before SPI write burst */
     uint32_t part_int = 0; /* integer part for PLL register value calculation */
     uint32_t part_frac = 0; /* fractional part for PLL register value calculation */
