@@ -36,12 +36,19 @@
 
 #include "parson.h"
 #include "loragw_hal.h"
+#include "loragw_reg.h"
+#include "loragw_aux.h"
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */
 
 #define ARRAY_SIZE(a)   (sizeof(a) / sizeof((a)[0]))
 #define MSG(args...)    fprintf(stderr,"loragw_pkt_logger: " args) /* message that is destined to the user */
+
+/* -------------------------------------------------------------------------- */
+/* --- PRIVATE CONSTANTS ---------------------------------------------------- */
+
+#define TX_RF_CHAIN                 0 /* TX only supported on radio A */
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE VARIABLES (GLOBAL) ------------------------------------------- */
@@ -411,7 +418,7 @@ void usage(void) {
     printf( " -h print this help\n");
     printf( " -r <int> rotate log file every N seconds (-1 disable log rotation)\n");
     printf( " -p <int> Tx power (dBm) [ ");
-    for (i = 0; i < txgain_lut.size; i++) {
+    for (int i = 0; i < txgain_lut.size; i++) {
         printf("%ddBm ", txgain_lut.lut[i].rf_power);
     }
     printf("]\n");
@@ -423,20 +430,15 @@ void usage(void) {
 int main(int argc, char **argv)
 {
     uint8_t status_var;
-    
+
     /* user entry parameters */
     int xi = 0;
 
     /* application parameters */
-    char mod[64] = DEFAULT_MODULATION;
-    uint32_t f_target = 0; /* target frequency - invalid default value, has to be specified by user */
-    int sf = 10; /* SF10 by default */
-    int cr = 1; /* CR1 aka 4/5 by default */
-    int bw = 125; /* 125kHz bandwidth by default */
     int pow = 14; /* 14 dBm by default */
     int preamb = 8; /* 8 symbol preamble by default */
     int pl_size = 2; /* 2 bytes payload by default */
-    uint32_t delay = 1E6; /* 1 second between packets by default */
+    uint32_t wait_time = 1E6; /* 1 second between packets by default */
     bool invert = false;
 
 
@@ -604,9 +606,9 @@ int main(int argc, char **argv)
             txpkt.size = pl_size;
 
             /* Escribimos el Mensaje de confirmación*/
-            strcpy((char *)txpkt.payload, "OK")
+            strcpy((char *)txpkt.payload, "OK");
 
-            txpkt.count_us = p->count_us + delay;
+            txpkt.count_us = p->count_us + wait_time;
 
             //Empezamos a escribir en el registro los datos
             /* writing gateway ID */
@@ -630,8 +632,6 @@ int main(int argc, char **argv)
 
             /* writing RX modem/IF chain */
             fprintf(log_file, "%2d,", p->if_chain);
-
-            txpkt.count_us = sx1301_count_us + 50E3;
 
             /* writing status */
             switch(p->status) {
