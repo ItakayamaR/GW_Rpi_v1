@@ -731,7 +731,7 @@ int main(int argc, char **argv)
                 } while (status_var != TX_FREE && i<1000);
                 if (i==5000) printf("Error al enviar mensaje de confirmación\n");
             printf("OK\n");
-            printf("\n")
+            printf("\n");
         }
         }
 
