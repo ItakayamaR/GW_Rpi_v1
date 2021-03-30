@@ -384,11 +384,6 @@ uint16_t lgw_get_tx_start_delay(bool tx_notch_enable, uint8_t bw) {
     float bw_delay_us = 0.0;
     float tx_start_delay;
 
-    /* Notch filtering performed by FPGA adds a constant delay (group delay) that we need to compensate */
-    if (tx_notch_enable) {
-        notch_delay_us = lgw_fpga_get_tx_notch_delay();
-    }
-
     /* Calibrated delay brought by SX1301 depending on signal bandwidth */
     switch (bw) {
         case BW_125KHZ:
@@ -427,25 +422,7 @@ int lgw_board_setconf(struct lgw_conf_board_s conf) {
     return LGW_HAL_SUCCESS;
 }
 
-/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-int lgw_lbt_setconf(struct lgw_conf_lbt_s conf) {
-    int x;
-
-    /* check if the concentrator is running */
-    if (lgw_is_started == true) {
-        DEBUG_MSG("ERROR: CONCENTRATOR IS RUNNING, STOP IT BEFORE TOUCHING CONFIGURATION\n");
-        return LGW_HAL_ERROR;
-    }
-
-    x = lbt_setconf(&conf);
-    if (x != LGW_LBT_SUCCESS) {
-        DEBUG_MSG("ERROR: Failed to configure concentrator for LBT\n");
-        return LGW_HAL_ERROR;
-    }
-
-    return LGW_HAL_SUCCESS;
-}
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -745,24 +722,6 @@ int lgw_start(void) {
     /* gives AGC control of GPIOs to enable Tx external digital filter */
     lgw_reg_w(LGW_GPIO_MODE,31); /* Set all GPIOs as output */
     lgw_reg_w(LGW_GPIO_SELECT_OUTPUT,2);
-
-    /* Configure LBT */
-    if (lbt_is_enabled() == true) {
-        lgw_reg_w(LGW_CLK32M_EN, 1);
-        i = lbt_setup();
-        if (i != LGW_LBT_SUCCESS) {
-            DEBUG_MSG("ERROR: lbt_setup() did not return SUCCESS\n");
-            return LGW_HAL_ERROR;
-        }
-
-        /* Start SX1301 counter and LBT FSM at the same time to be in sync */
-        lgw_reg_w(LGW_CLK32M_EN, 0);
-        i = lbt_start();
-        if (i != LGW_LBT_SUCCESS) {
-            DEBUG_MSG("ERROR: lbt_start() did not return SUCCESS\n");
-            return LGW_HAL_ERROR;
-        }
-    }
 
     /* Enable clocks */
     lgw_reg_w(LGW_GLOBAL_EN, 1);
@@ -1593,16 +1552,11 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     /* reset TX command flags */
     lgw_abort_tx();
 
-    /* put metadata + payload in the TX data buffer */
+    /* put metadata + pasyload in the TX data buffer */
     lgw_reg_w(LGW_TX_DATA_BUF_ADDR, 0);
     lgw_reg_wb(LGW_TX_DATA_BUF_DATA, buff, transfer_size);
     DEBUG_ARRAY(i, transfer_size, buff);
 
-    x = lbt_is_channel_free(&pkt_data, tx_start_delay, &tx_allowed);
-    if (x != LGW_LBT_SUCCESS) {
-        DEBUG_MSG("ERROR: Failed to check channel availability for TX\n");
-        return LGW_HAL_ERROR;
-    }
     if (tx_allowed == true) {
         switch(pkt_data.tx_mode) {
             case IMMEDIATE:
