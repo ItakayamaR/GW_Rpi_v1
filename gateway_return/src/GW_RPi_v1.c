@@ -724,6 +724,7 @@ int main(int argc, char **argv)
                 do {
                     wait_ms(5);
                     lgw_status(TX_STATUS, &status_var); /* get TX status */
+                    printf("enviando\n");
                 } while (status_var != TX_FREE);
             printf("OK\n");
         }
