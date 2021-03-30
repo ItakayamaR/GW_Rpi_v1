@@ -714,25 +714,28 @@ int main(int argc, char **argv)
             fflush(log_file);
             ++pkt_in_log;
 
-            /* Enviamos el mensaje de confirmacion */
-            MSG("Sending OK\n");
-            i = lgw_send(txpkt); /* non-blocking scheduling of TX packet */
-            if (i == LGW_HAL_ERROR) {
-                printf("ERROR\n");
-                return EXIT_FAILURE;
-            } else {
-                /* wait for packet to finish sending */
-                i=0;
-                do {
-                    wait_ms(5);
-                    i++;
-                    lgw_status(TX_STATUS, &status_var); /* get TX status */
-                    //printf("enviando\n");
-                } while (status_var != TX_FREE && i<1000);
-                if (i==5000) printf("Error al enviar mensaje de confirmación\n");
-            printf("OK\n");
-            printf("\n");
-        }
+            /* Si es que se ha recibido un mensaje con CRC correcto */
+            if (p->status == STAT_CRC_OK) {
+                /* Enviamos el mensaje de confirmacion */
+                MSG("Sending OK\n");
+                i = lgw_send(txpkt); /* non-blocking scheduling of TX packet */
+                if (i == LGW_HAL_ERROR) {
+                    printf("ERROR\n");
+                    return EXIT_FAILURE;
+                } else {
+                    /* wait for packet to finish sending */
+                    i=0;
+                    do {
+                        wait_ms(5);
+                        i++;
+                        lgw_status(TX_STATUS, &status_var); /* get TX status */
+                        //printf("enviando\n");
+                    } while (status_var != TX_FREE && i<1000);
+                    if (i==5000) printf("Error al enviar mensaje de confirmación\n");
+                    printf("OK\n");
+                    printf("\n");
+                }
+            } else printf("CRC malo, no se enviará mensaje de confirmación\n");
         }
 
         /* check time and rotate log file if necessary */
