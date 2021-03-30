@@ -722,12 +722,16 @@ int main(int argc, char **argv)
                 return EXIT_FAILURE;
             } else {
                 /* wait for packet to finish sending */
+                i=0;
                 do {
                     wait_ms(5);
+                    i++;
                     lgw_status(TX_STATUS, &status_var); /* get TX status */
                     //printf("enviando\n");
-                } while (status_var != TX_FREE);
+                } while (status_var != TX_FREE && i<1000);
+                if (i==5000) printf("Error al enviar mensaje de confirmación\n");
             printf("OK\n");
+            printf("\n")
         }
         }
 
