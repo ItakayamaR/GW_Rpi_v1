@@ -379,7 +379,7 @@ int32_t lgw_sf_getval(int x) {
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-uint16_t lgw_get_tx_start_delay(bool tx_notch_enable, uint8_t bw) {
+uint16_t lgw_get_tx_start_delay(uint8_t bw) {
     float notch_delay_us = 0.0;
     float bw_delay_us = 0.0;
     float tx_start_delay;
@@ -447,10 +447,6 @@ int lgw_rxrf_setconf(uint8_t rf_chain, struct lgw_conf_rxrf_s conf) {
     }
 
     /* check if TX notch filter frequency is supported */
-    if ((conf.tx_enable == true) && ((conf.tx_notch_freq < LGW_MIN_NOTCH_FREQ) || (conf.tx_notch_freq > LGW_MAX_NOTCH_FREQ))) {
-        DEBUG_PRINTF("WARNING: NOT A VALID TX NOTCH FILTER FREQUENCY [%u..%u]Hz\n", LGW_MIN_NOTCH_FREQ, LGW_MAX_NOTCH_FREQ);
-        conf.tx_notch_freq = 0;
-    }
 
     /* set internal config according to parameters */
     rf_enable[rf_chain] = conf.enable;
@@ -1364,7 +1360,7 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     }
 
     /* Get the TX start delay to be applied for this TX */
-    tx_start_delay = lgw_get_tx_start_delay(tx_notch_enable, pkt_data.bandwidth);
+    tx_start_delay = lgw_get_tx_start_delay(pkt_data.bandwidth);
 
     /* interpretation of TX power */
     for (pow_index = txgain_lut.size-1; pow_index > 0; pow_index--) {

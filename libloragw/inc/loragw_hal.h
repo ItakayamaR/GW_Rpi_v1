@@ -305,13 +305,6 @@ struct lgw_tx_gain_lut_s {
 int lgw_board_setconf(struct lgw_conf_board_s conf);
 
 /**
-@brief Configure the gateway lbt function
-@param conf structure containing the configuration parameters
-@return LGW_HAL_ERROR id the operation failed, LGW_HAL_SUCCESS else
-*/
-int lgw_lbt_setconf(struct lgw_conf_lbt_s conf);
-
-/**
 @brief Configure an RF chain (must configure before start)
 @param rf_chain number of the RF chain to configure [0, LGW_RF_CHAIN_NB - 1]
 @param conf structure containing the configuration parameters
