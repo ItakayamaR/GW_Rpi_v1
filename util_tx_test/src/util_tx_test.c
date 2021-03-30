@@ -183,13 +183,6 @@ int main(int argc, char **argv)
     bool invert = false;
     float br_kbps = DEFAULT_BR_KBPS;
     uint8_t fdev_khz = DEFAULT_FDEV_KHZ;
-    uint32_t lbt_f_target = 0;
-    uint32_t lbt_sc_time = 5000;
-    int8_t lbt_rssi_target_dBm = -80;
-    int8_t lbt_rssi_offset_dB = DEFAULT_SX127X_RSSI_OFFSET;
-    uint8_t  lbt_nb_channel = 1;
-    uint32_t sx1301_count_us;
-    uint32_t tx_notch_freq = DEFAULT_NOTCH_FREQ;
 
     /* RF configuration (TX fail if RF chain is not enabled) */
     enum lgw_radio_type_e radio_type = LGW_RADIO_TYPE_NONE;
