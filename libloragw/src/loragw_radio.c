@@ -22,7 +22,7 @@ Maintainer: Michael Coracin
 
 #include "loragw_sx125x.h"
 #include "loragw_sx1272_fsk.h"
-#include "loragw_sx1272_lora.h"
+#include "loragw_sx1272_lora.hs"
 #include "loragw_sx1276_fsk.h"
 #include "loragw_sx1276_lora.h"
 #include "loragw_spi.h"
@@ -30,7 +30,6 @@ Maintainer: Michael Coracin
 #include "loragw_reg.h"
 #include "loragw_hal.h"
 #include "loragw_radio.h"
-#include "loragw_fpga.h"
 
 /* -------------------------------------------------------------------------- */
 /* --- PRIVATE MACROS ------------------------------------------------------- */

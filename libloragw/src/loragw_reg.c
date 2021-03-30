@@ -526,23 +526,6 @@ int lgw_connect(bool spi_only, uint32_t tx_notch_freq) {
             DEBUG_MSG("ERROR READING VERSION REGISTER\n");
             return LGW_REG_ERROR;
         }
-        if (check_fpga_version(u) != true) {
-            /* We failed to read expected FPGA version, so let's assume there is no FPGA */
-            DEBUG_PRINTF("INFO: no FPGA detected or version not supported (v%u)\n", u);
-            lgw_spi_mux_mode = LGW_SPI_MUX_MODE0;
-        } else {
-            DEBUG_PRINTF("INFO: detected FPGA with SPI mux header (v%u)\n", u);
-            lgw_spi_mux_mode = LGW_SPI_MUX_MODE1;
-            /* FPGA Soft Reset */
-            lgw_spi_w(lgw_spi_target, lgw_spi_mux_mode, LGW_SPI_MUX_TARGET_FPGA, 0, 1);
-            lgw_spi_w(lgw_spi_target, lgw_spi_mux_mode, LGW_SPI_MUX_TARGET_FPGA, 0, 0);
-            /* FPGA configure */
-            x = lgw_fpga_configure(tx_notch_freq);
-            if (x != LGW_REG_SUCCESS) {
-                DEBUG_MSG("ERROR CONFIGURING FPGA\n");
-                return LGW_REG_ERROR;
-            }
-        }
 
         /* check SX1301 version */
         spi_stat = lgw_spi_r(lgw_spi_target, lgw_spi_mux_mode, LGW_SPI_MUX_TARGET_SX1301, loregs[LGW_VERSION].addr, &u);
