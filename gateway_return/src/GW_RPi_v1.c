@@ -8,10 +8,23 @@
     Sx1301: https://semtech.my.salesforce.com/sfc/p/#E0000000JelG/a/44000000MDnR/Et1KWLCuNDI6MDagfSPAvqqp.Y869Flgs1LleWyfjDY
 
   El programa recepciona los datos de los canales establecidos en el archivo global_config.jason y devuelve un mensaje
-  de confirmaci�n en el mismo canal y con el mismo SP y CR.
+  de confirmacion en el mismo canal y con el mismo SP y CR.
 
-  Los mensajes pueden ser enviados con cualquier SP y CR, pero debe estar dentro de los canales establecidos. Adem�s, deber�
+  Los mensajes pueden ser enviados con cualquier SP y CR, pero debe estar dentro de los canales establecidos. Ademas, deberan
   tener el sync word de 0x34 y el crc activado.
+
+  Los canales establecidos son (MHz):
+  - 916.8
+  - 917
+  - 917.2
+  - 917.4
+  - 917.6
+  - 917.8
+  - 918
+  - 918.2
+  - 917.5 (BW 500KHz, SP 8)
+
+  Los canales se pueden modificar en el documento global_config.jason
 
 */
 /* -------------------------------------------------------------------------- */
@@ -731,11 +744,15 @@ int main(int argc, char **argv)
                         lgw_status(TX_STATUS, &status_var); /* get TX status */
                         //printf("enviando\n");
                     } while (status_var != TX_FREE && i<1000);
-                    if (i==5000) printf("Error al enviar mensaje de confirmación\n");
-                    printf("OK\n");
-                    printf("\n");
+                    if (i==5000){
+                        printf("Error al enviar mensaje de confirmación\n");
+                    } else  {
+                        printf("Se envió mensaje de confirmación\n");
+                    }
+                    
                 }
             } else printf("CRC malo, no se enviará mensaje de confirmación\n");
+            printf("\n");
         }
 
         /* check time and rotate log file if necessary */
