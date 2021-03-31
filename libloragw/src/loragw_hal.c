@@ -1101,11 +1101,11 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
             break;
         }
 
-        DEBUG_MSG("Información de registros");
-        DEBUG_PRINTF("- Nº de mensajes recibidos: %x/n\n", buff[0]);
-        DEBUG_PRINTF("- Posición del paquete actual en el buffer: %x %x\n", buff[2], buff[1]);
-        DEBUG_PRINTF("- Status de CRC (5 correcto, 7 error): %x\n", buff[3]);
-        DEBUG_PRINTF("- Cantidad de bytes recibidos: %x\n", buff[4]);
+        DEBUG_MSG("Información de registros\n");
+        DEBUG_PRINTF("- Nº de mensajes recibidos: 0x%02x\n", buff[0]);
+        DEBUG_PRINTF("- Posición del paquete actual en el buffer: 0x%02x%02x\n", buff[2], buff[1]);
+        DEBUG_PRINTF("- Status de CRC (5 correcto, 7 error): 0x%02x\n", buff[3]);
+        DEBUG_PRINTF("- Cantidad de bytes recibidos: 0x%02x\n", buff[4]);
         p->size = buff[4];
         sz = p->size;
         stat_fifo = buff[3]; /* will be used later, need to save it before overwriting buff */
@@ -1293,7 +1293,6 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     uint8_t pow_index = 0; /* 4-bit value to set the firmware TX power */
     uint8_t target_mix_gain = 0; /* used to select the proper I/Q offset correction */
     uint32_t count_trig = 0; /* timestamp value in trigger mode corrected for TX start delay */
-    bool tx_allowed = false;
     uint16_t tx_start_delay;
     bool tx_notch_enable = false;
 
