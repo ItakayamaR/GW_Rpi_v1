@@ -1101,7 +1101,8 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
             break;
         }
 
-        DEBUG_PRINTF("FIFO content: %x %x %x %x %x\n", buff[0], buff[1], buff[2], buff[3], buff[4]);
+        DEBUG_PRINTF("Contenido de fifo:\n- Nº de mensajes recibidos: %x/n\n- Posición del paquete actual en el buffer: %x %x\n
+        - Status de CRC (5 correcto, 7 error): %x\n- Cantidad de bytes recibidos: %x\n", buff[0], buff[2], buff[1], buff[3], buff[4]);
 
         p->size = buff[4];
         sz = p->size;
