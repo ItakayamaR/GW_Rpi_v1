@@ -1101,7 +1101,7 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
             break;
         }
 
-        DEBUG_PRINTF("Información de registros");
+        DEBUG_MSG("Información de registros");
         DEBUG_PRINTF("- Nº de mensajes recibidos: %x/n\n", buff[0]);
         DEBUG_PRINTF("- Posición del paquete actual en el buffer: %x %x\n", buff[2], buff[1]);
         DEBUG_PRINTF("- Status de CRC (5 correcto, 7 error): %x\n", buff[3]);
