@@ -1549,28 +1549,25 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     lgw_reg_wb(LGW_TX_DATA_BUF_DATA, buff, transfer_size);
     DEBUG_ARRAY(i, transfer_size, buff);
 
-    if (tx_allowed == true) {
-        switch(pkt_data.tx_mode) {
-            case IMMEDIATE:
-                lgw_reg_w(LGW_TX_TRIG_IMMEDIATE, 1);
-                break;
+ 
+    switch(pkt_data.tx_mode) {
+        case IMMEDIATE:
+            lgw_reg_w(LGW_TX_TRIG_IMMEDIATE, 1);
+            break;
 
-            case TIMESTAMPED:
-                lgw_reg_w(LGW_TX_TRIG_DELAYED, 1);
-                break;
+        case TIMESTAMPED:
+            lgw_reg_w(LGW_TX_TRIG_DELAYED, 1);
+            break;
 
-            case ON_GPS:
-                lgw_reg_w(LGW_TX_TRIG_GPS, 1);
-                break;
+        case ON_GPS:
+            lgw_reg_w(LGW_TX_TRIG_GPS, 1);
+            break;
 
-            default:
-                DEBUG_PRINTF("ERROR: UNEXPECTED VALUE %d IN SWITCH STATEMENT\n", pkt_data.tx_mode);
-                return LGW_HAL_ERROR;
-        }
-    } else {
-        DEBUG_MSG("ERROR: Cannot send packet, channel is busy (LBT)\n");
-        return LGW_LBT_ISSUE;
+        default:
+            DEBUG_PRINTF("ERROR: UNEXPECTED VALUE %d IN SWITCH STATEMENT\n", pkt_data.tx_mode);
+            return LGW_HAL_ERROR;
     }
+
 
     return LGW_HAL_SUCCESS;
 }
