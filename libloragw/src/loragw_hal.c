@@ -1101,7 +1101,7 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
             break;
         }
 
-        DEBUG_MSG("Información de registros\n");
+        DEBUG_MSG("Información de registros:\n");
         DEBUG_PRINTF("- Nº de mensajes recibidos: 0x%02x\n", buff[0]);
         DEBUG_PRINTF("- Posición del paquete actual en el buffer: 0x%02x%02x\n", buff[2], buff[1]);
         DEBUG_PRINTF("- Status de CRC (5 correcto, 7 error): 0x%02x\n", buff[3]);
@@ -1123,7 +1123,8 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
             break;
         }
         ifmod = ifmod_config[p->if_chain];
-        DEBUG_PRINTF("[%d %d]\n", p->if_chain, ifmod);
+        DEBUG_PRINTF("- Canal por el cual fue recibido el paquete: %d\n", p->if_chain);
+        DEBUG_PRINTF("- Tipo de recepción (16 para canales de 125KHz, 17 para canal lora de ancho variable): %d\n",ifmod);
 
         p->rf_chain = (uint8_t)if_rf_chain[p->if_chain];
         p->freq_hz = (uint32_t)((int32_t)rf_rx_freq[p->rf_chain] + if_freq[p->if_chain]);
@@ -1294,7 +1295,6 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     uint8_t target_mix_gain = 0; /* used to select the proper I/Q offset correction */
     uint32_t count_trig = 0; /* timestamp value in trigger mode corrected for TX start delay */
     uint16_t tx_start_delay;
-    bool tx_notch_enable = false;
 
     /* check if the concentrator is running */
     if (lgw_is_started == false) {
@@ -1356,10 +1356,6 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
         return LGW_HAL_ERROR;
     }
 
-    /* Enable notch filter for LoRa 125kHz */
-    if ((pkt_data.modulation == MOD_LORA) && (pkt_data.bandwidth == BW_125KHZ)) {
-        tx_notch_enable = true;
-    }
 
     /* Get the TX start delay to be applied for this TX */
     tx_start_delay = lgw_get_tx_start_delay(pkt_data.bandwidth);
@@ -1488,11 +1484,6 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
             buff[0] |= 0x80; /* Set MSB bit to enlarge analog filter for 500kHz BW */
         }
 
-        /* Set MSB-1 bit to enable digital filter if required */
-        if (tx_notch_enable == true) {
-            DEBUG_MSG("INFO: Enabling TX notch filter\n");
-            buff[0] |= 0x40;
-        }
     } else if (pkt_data.modulation == MOD_FSK) {
         /* metadata 7, modulation type, radio chain selection and TX power */
         buff[7] = (0x20 & (pkt_data.rf_chain << 5)) | 0x10 | (0x0F & pow_index); /* bit 4 is 1 -> FSK modulation */
