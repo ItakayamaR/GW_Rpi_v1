@@ -380,7 +380,6 @@ int32_t lgw_sf_getval(int x) {
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 uint16_t lgw_get_tx_start_delay(uint8_t bw) {
-    float notch_delay_us = 0.0;
     float bw_delay_us = 0.0;
     float tx_start_delay;
 
@@ -395,9 +394,9 @@ uint16_t lgw_get_tx_start_delay(uint8_t bw) {
             break;
     }
 
-    tx_start_delay = (float)TX_START_DELAY_DEFAULT - bw_delay_us - notch_delay_us;
+    tx_start_delay = (float)TX_START_DELAY_DEFAULT - bw_delay_us;
 
-    printf("INFO: tx_start_delay=%u (%f) - (%u, bw_delay=%f, notch_delay=%f)\n", (uint16_t)tx_start_delay, tx_start_delay, TX_START_DELAY_DEFAULT, bw_delay_us, notch_delay_us);
+    printf("INFO: tx_start_delay=%u (%f) - (%u, bw_delay=%f\n)", (uint16_t)tx_start_delay, tx_start_delay, TX_START_DELAY_DEFAULT, bw_delay_us);
 
     return (uint16_t)tx_start_delay; /* keep truncating instead of rounding: better behaviour measured */
 }
@@ -1124,7 +1123,7 @@ int lgw_receive(uint8_t max_pkt, struct lgw_pkt_rx_s *pkt_data) {
         }
         ifmod = ifmod_config[p->if_chain];
         DEBUG_PRINTF("- Canal por el cual fue recibido el paquete: %d\n", p->if_chain);
-        DEBUG_PRINTF("- Tipo de recepción (16 para canales de 125KHz, 17 para canal lora de ancho variable): %d\n",ifmod);
+        DEBUG_PRINTF("- Tipo de recepción (17 para canales de 125KHz, 16 para canal lora de BW variable): %d\n",ifmod);
 
         p->rf_chain = (uint8_t)if_rf_chain[p->if_chain];
         p->freq_hz = (uint32_t)((int32_t)rf_rx_freq[p->rf_chain] + if_freq[p->if_chain]);
@@ -1540,6 +1539,7 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     /* put metadata + pasyload in the TX data buffer */
     lgw_reg_w(LGW_TX_DATA_BUF_ADDR, 0);
     lgw_reg_wb(LGW_TX_DATA_BUF_DATA, buff, transfer_size);
+    DEBUG_MSG("Data a escribirse en el buffer de envío\n");
     DEBUG_ARRAY(i, transfer_size, buff);
 
  
