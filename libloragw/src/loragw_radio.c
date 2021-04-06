@@ -21,10 +21,6 @@ Maintainer: Michael Coracin
 #include <stdio.h>      /* printf fprintf */
 
 #include "loragw_sx125x.h"
-#include "loragw_sx1272_fsk.h"
-#include "loragw_sx1272_lora.h"
-#include "loragw_sx1276_fsk.h"
-#include "loragw_sx1276_lora.h"
 #include "loragw_spi.h"
 #include "loragw_aux.h"
 #include "loragw_reg.h"
