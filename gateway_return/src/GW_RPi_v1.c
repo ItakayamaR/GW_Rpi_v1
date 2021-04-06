@@ -22,7 +22,7 @@
   - 917.8
   - 918
   - 918.2
-  - 917.5 (BW 500KHz, SP 8)
+  - 917.5 (BW 500KHz, SF 8)
 
   Los canales se pueden modificar en el documento global_config.jason
 
