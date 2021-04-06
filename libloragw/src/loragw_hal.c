@@ -396,7 +396,7 @@ uint16_t lgw_get_tx_start_delay(uint8_t bw) {
 
     tx_start_delay = (float)TX_START_DELAY_DEFAULT - bw_delay_us;
 
-    printf("INFO: tx_start_delay=%u (%f) - (%u, bw_delay=%f\n)", (uint16_t)tx_start_delay, tx_start_delay, TX_START_DELAY_DEFAULT, bw_delay_us);
+    printf("INFO: tx_start_delay=%u (%f) - (%u, bw_delay=%f)\n", (uint16_t)tx_start_delay, tx_start_delay, TX_START_DELAY_DEFAULT, bw_delay_us);
 
     return (uint16_t)tx_start_delay; /* keep truncating instead of rounding: better behaviour measured */
 }
@@ -1539,7 +1539,7 @@ int lgw_send(struct lgw_pkt_tx_s pkt_data) {
     /* put metadata + pasyload in the TX data buffer */
     lgw_reg_w(LGW_TX_DATA_BUF_ADDR, 0);
     lgw_reg_wb(LGW_TX_DATA_BUF_DATA, buff, transfer_size);
-    DEBUG_MSG("Data a escribirse en el buffer de envío\n");
+    DEBUG_MSG("Data a escribirse en el buffer de envío:\n");
     DEBUG_ARRAY(i, transfer_size, buff);
 
  
