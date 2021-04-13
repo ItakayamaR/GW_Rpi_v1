@@ -172,7 +172,7 @@ the concentrator through the HOST GPIO pin.
 FPGA was missing for proper IQ inversion configuration.
 * HAL: Added support for several versions of FPGA (currently v18 and v19)
 * HAL: Reduced radio TX PLL bandwidth to reduce the noise level.
-* util_tx_test: Added FSK support and added minimal TX gain LUT.
+* util_tx_test: Added FSK support and added minimal TX gain LUT (look up table).
 * util_spectral_scan: Removed FPGA soft reset, now done by the HAL.
 * util_tx_continous: reworked to use HAL functions instead of 'manual' config,
 and use same SX1301 calibration firmware as the HAL.
